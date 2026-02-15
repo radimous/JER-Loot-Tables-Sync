@@ -1,0 +1,28 @@
+{
+  "required": true,
+  "minVersion": "0.8",
+  "package": "com.radimous.jer_loot_tables_sync.mixin",
+  "compatibilityLevel": "JAVA_17",
+  "refmap": "jer_loot_tables_sync.refmap.json",
+  "mixins": [
+    "MixinDungeonEntry",
+    "MixinLootTableHelper",
+    "MixinMinecraftCompat",
+    "MixinTradeList",
+    "accessors.AccessorConditional",
+    "accessors.AccessorLootDrop",
+    "accessors.AccessorLootItem",
+    "accessors.AccessorLootPoolEntryContainer",
+    "accessors.AccessorLootPoolSingletonContainer",
+    "accessors.AccessorLootTableReference",
+    "accessors.AccessorMobEntry"
+  ],
+  "client": [
+  ],
+  "injectors": {
+    "defaultRequire": 1
+  },
+  "overwrites": {
+    "requireAnnotations": true
+  }
+}
