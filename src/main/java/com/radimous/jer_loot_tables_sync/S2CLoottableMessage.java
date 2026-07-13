@@ -19,7 +19,7 @@ import java.util.List;
 import java.util.function.Supplier;
 
 public record S2CLoottableMessage(
-    List<Pair<ResourceLocation, List<LootDrop>>> msgValue
+    List<Pair<ResourceLocation, LootDropInfo>> msgValue
 ) {
     public static void encode(S2CLoottableMessage message, FriendlyByteBuf buffer) {
         buffer.writeInt(message.msgValue.size());
@@ -31,11 +31,11 @@ public record S2CLoottableMessage(
 
     public static S2CLoottableMessage decode(FriendlyByteBuf buffer) {
         int size = buffer.readInt();
-        ArrayList<Pair<ResourceLocation, List<LootDrop>>> arrList = new ArrayList<>(size);
+        ArrayList<Pair<ResourceLocation, LootDropInfo>> arrList = new ArrayList<>(size);
         JERLootTablesSync.LOGGER.debug("Received {} Loot Tables", size);
         for (int i = 0; i < size; i++) {
             ResourceLocation identifier = buffer.readResourceLocation();
-            List<LootDrop> json = readLootDrops(buffer);
+            LootDropInfo json = readLootDrops(buffer);
             arrList.add(new Pair<>(identifier, json));
         }
         return new S2CLoottableMessage(arrList);
@@ -54,10 +54,13 @@ public record S2CLoottableMessage(
     }
 
 
-    private static void writeLootDrops(FriendlyByteBuf buffer, List<LootDrop> lootDrops) {
-        buffer.writeVarInt(lootDrops.size());
+    private static void writeLootDrops(FriendlyByteBuf buffer, LootDropInfo lootDrops) {
+        buffer.writeVarInt(lootDrops.minStacks());
+        buffer.writeVarInt(lootDrops.maxStacks());
 
-        for (LootDrop drop : lootDrops) {
+        buffer.writeVarInt(lootDrops.drops().size());
+
+        for (LootDrop drop : lootDrops.drops()) {
             buffer.writeVarInt(drop.minDrop);
             buffer.writeVarInt(drop.maxDrop);
 
@@ -80,7 +83,9 @@ public record S2CLoottableMessage(
         }
     }
 
-    private static List<LootDrop> readLootDrops(FriendlyByteBuf buffer) {
+    private static LootDropInfo readLootDrops(FriendlyByteBuf buffer) {
+        int minStacks = buffer.readVarInt();
+        int maxStacks = buffer.readVarInt();
         int size = buffer.readVarInt();
         List<LootDrop> drops = new ArrayList<>(size);
 
@@ -119,7 +124,7 @@ public record S2CLoottableMessage(
             drops.add(drop);
         }
 
-        return drops;
+        return new LootDropInfo(drops, minStacks, maxStacks);
     }
 
     private static void writeConditional(FriendlyByteBuf buffer, Conditional conditional) {
@@ -142,7 +147,7 @@ public record S2CLoottableMessage(
         int size = 50;
         for (int i = 0; i < names.size(); i += size) {
             int end = Math.min(names.size(), i + size);
-            List<Pair<ResourceLocation, List<LootDrop>>> arrList = new ArrayList<>(end - i);
+            List<Pair<ResourceLocation, LootDropInfo>> arrList = new ArrayList<>(end - i);
             for (int j = i; j < end; j++) {
                 ResourceLocation location = names.get(j);
                 arrList.add(new Pair<>(location, NetworkDrops.toDrops(lootManager, location)));

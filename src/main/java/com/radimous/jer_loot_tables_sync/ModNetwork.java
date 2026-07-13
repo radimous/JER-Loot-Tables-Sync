@@ -8,12 +8,12 @@ import net.minecraftforge.network.simple.SimpleChannel;
 
 public class ModNetwork {
     private static int id = 0;
-    private static final String PROTOCOL_VERSION = "1.0.0";
+    private static final String PROTOCOL_VERSION = "1.1.0";
 
     public static final SimpleChannel CHANNEL = NetworkRegistry.ChannelBuilder
         .named(ResourceLocation.fromNamespaceAndPath(JERLootTablesSync.MOD_ID, "s2c_loot_table"))
-        .clientAcceptedVersions(ver -> true)
-        .serverAcceptedVersions(ver -> true)
+        .clientAcceptedVersions(NetworkRegistry.acceptMissingOr(PROTOCOL_VERSION))
+        .serverAcceptedVersions(NetworkRegistry.acceptMissingOr(PROTOCOL_VERSION))
         .networkProtocolVersion(() -> PROTOCOL_VERSION)
         .simpleChannel();
 

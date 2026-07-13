@@ -17,10 +17,22 @@ import java.util.Set;
 public class MixinDungeonEntry {
     @Shadow private Set<LootDrop> drops;
 
+    @Shadow
+    private int minStacks;
+
+    @Shadow
+    private int maxStacks;
+
     @Inject(method = "<init>", at = @At("RETURN"))
     private void fillPartialIfEmpty(String name, LootTable lootTable, CallbackInfo ci){
         if (this.drops.isEmpty()) {
-            this.drops.addAll(NetworkDrops.ID_TO_LOOT.get(ResourceLocation.parse(name)));
+            var netDrops = NetworkDrops.ID_TO_LOOT.get(ResourceLocation.parse(name));
+            if (netDrops != null) {
+                this.drops.addAll(netDrops.drops());
+                this.minStacks = netDrops.minStacks();
+                this.maxStacks = netDrops.maxStacks();
+            }
+
         }
     }
 }

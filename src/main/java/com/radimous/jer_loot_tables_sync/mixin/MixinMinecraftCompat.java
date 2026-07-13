@@ -25,7 +25,7 @@ public class MixinMinecraftCompat {
         if (lootTable.getLootTableId() == null && loottableRL != null && origRv.getDrops().isEmpty()) {
             var netDrops = NetworkDrops.ID_TO_LOOT.get(loottableRL);
             if (netDrops != null) {
-                return AccessorMobEntry.createMobEntry(entity, null, null, AccessorMobEntry.getANY_BIOMES(), netDrops);
+                return AccessorMobEntry.createMobEntry(entity, null, null, AccessorMobEntry.getANY_BIOMES(), netDrops.drops());
             }
         }
 

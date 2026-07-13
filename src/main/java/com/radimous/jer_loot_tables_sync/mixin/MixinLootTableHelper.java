@@ -19,7 +19,7 @@ public class MixinLootTableHelper  {
         if (lootTableID != null) {
             var fromNet = NetworkDrops.ID_TO_LOOT.get(lootTableID);
             if (fromNet != null) {
-                cir.setReturnValue(fromNet);
+                cir.setReturnValue(fromNet.drops());
             }
         }
     }
@@ -30,7 +30,7 @@ public class MixinLootTableHelper  {
         if (lootTableID != null) {
             var fromNet = NetworkDrops.ID_TO_LOOT.get(lootTableID);
             if (fromNet != null) {
-                cir.setReturnValue(fromNet);
+                cir.setReturnValue(fromNet.drops());
             }
         }
 
